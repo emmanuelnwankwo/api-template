@@ -1,0 +1,532 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0",
+        "title": "API Template",
+        "description": "Api Template"
+    },
+    "servers": [
+        {
+          "url": "http://localhost:3000/"
+        },
+        {
+          "url": "https://herokuapp.com/"
+        }
+      ],
+    "host": "",
+    "basePath": "/api",
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Standard Authorization header using the bearer scheme. Example: \"bearer {token}\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Endpoint for Authentication"
+        },
+        {
+            "name": "Users",
+            "description": "Endpoint for Users"
+        }
+    ],
+    "paths": {
+        "/auth/signup": {
+            "post": {
+                "description": "Registers a User",
+                "summary": "Creates a new user on the system",
+                "tags": [
+                    "Auth"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "description": "This is the request body object containing user information",
+                        "schema": {
+                            "$ref": "#/requestBody/userSignupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Account created successfully"
+                    },
+                    "400": {
+                        "description": "Please fill in the fields"
+                    },
+                    "409": {
+                        "description": "User with email already exists"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/verify": {
+            "get": {
+              "description": "The endpoint verifies a new user's verification link and marks the user account as verified if successful",
+              "summary": "Marks User account as verified",
+              "tags": [
+                "Auth"
+              ],
+              "parameters": [
+                {
+                  "name": "token",
+                  "in": "query",
+                  "schema": {
+                    "type": "string"
+                  },
+                  "example": "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
+                }
+              ],
+              "responses": {
+                "500": {
+                  "description": "Internal Server Error"
+                },
+                "400": {
+                  "description": "Invalid Token/User does not exist",
+                  "content": {
+                    "application/json; charset=utf-8": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "200": {
+                  "description": "Account verification success"
+                }
+              }
+            }
+          },
+        "/auth/login": {
+            "post": {
+                "description": "User should be logged in",
+                "summary": "Logs in an existing user",
+                "tags": [
+                    "Auth"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "description": "This is the request body object containing user login information",
+                        "schema": {
+                            "$ref": "#/requestBody/loginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login successful"
+                    },
+                    "401": {
+                        "description": "Invalid login details"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "get": {
+                "description": "Logout user",
+                "summary": "Logout user",
+                "tags": [
+                    "Auth"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [],
+                "responses": {
+                    "200": {
+                        "description": "Logout successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/users/{userId}": {
+            "get": {
+                "description": "Populates user details on the profile",
+                "summary": "Gets a single user profile",
+                "tags": [
+                    "Users"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userId",
+                        "required": true,
+                        "description": "The Id of the user"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Authentication required"
+                    },
+                    "404": {
+                        "description": "User Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/users/{userId}/edit": {
+            "patch": {
+                "description": "Updates a single user profile",
+                "summary": "User can update the profile details",
+                "tags": [
+                    "Users"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userId",
+                        "required": true,
+                        "description": "The Id of the user to be updated"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "description": "This is the request body object containing user update",
+                        "schema": {
+                            "$ref": "#/requestBody/updateUserProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Authorization required"
+                    },
+                    "404": {
+                        "description": "User Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "schema": {
+                        "$ref": "#/requestBody/updateUserProfileRequest"
+                    }
+                }
+            }
+        },
+        "/users/{userId}/": {
+            "delete": {
+                "description": "Delete user details on the database",
+                "summary": "Delete a single user",
+                "tags": [
+                    "Users"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userId",
+                        "required": true,
+                        "description": "The Id of the user"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Authentication required"
+                    },
+                    "404": {
+                        "description": "User Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "description": "Send a password reset email to the user",
+                "summary": "User can reset password",
+                "tags": [
+                    "Auth"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [],
+                "parameters": [
+                    {
+                      "in": "body",
+                      "name": "email",
+                      "required": true,
+                      "description": "The user email for password reset",
+                      "schema": {
+                        "$ref": "#/requestBody/resetPasswordRequest"
+                      }
+                    }
+                  ],
+                "responses": {
+                    "200": {
+                        "description": "Check your email for password reset link"
+                    },
+                    "400": {
+                      "description": "Email is required || Email must be valid"
+                    },
+                    "404": {
+                        "description": "User with email does not exist"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        }
+    },
+        "requestBody": {
+            "userSignupRequest": {
+                "title": "User Signup Request",
+                "type": "object",
+                "properties": {
+                    "firstName": {
+                        "description": "First name of the user",
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "description": "Last name of the user",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Email of the user",
+                        "type": "string"
+                    },
+                    "password": {
+                        "description": "The Password of the user",
+                        "type": "string"
+                    },
+                    "gender": {
+                        "description": "The user's gender",
+                        "type": "string"
+                    }
+
+                },
+                "example": {
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "email": "johndoe@example.com",
+                    "password": "john",
+                    "gender": "male"
+                  },
+                "required": [
+                    "firstName, lastName, email, password"
+                ]
+            },
+            "loginRequest": {
+                "title": "Login Request",
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "description": "Email address of the user",
+                        "type": "string"
+                    },
+                    "password": {
+                        "description": "The Password of the user",
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "email": "johndoe@example.com",
+                    "password": "john"
+                },
+                "required": [
+                    "email, password,"
+                ]
+            },
+            "updateUserProfileRequest": {
+                "title": "Update User",
+                "type": "object",
+                "properties": {
+                    "firstName": {
+                        "description": "First name of the user",
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "description": "Last name of the user",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Email of the user",
+                        "type": "string"
+                    },
+                    "gender": {
+                        "description": "Use gender",
+                        "type": "integer"
+                    },
+                    "preferredCurrency": {
+                        "description": "User preferred currency",
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "firstName": "first name",
+                    "lastName": "last name",
+                    "email": "newemail@example.com",
+                    "gender": "female"
+                }
+            },
+            "resetPasswordRequest": {
+                "title": "Password Reset Request",
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "description": "Email address of the user",
+                    "type": "string"
+                  }
+                },
+                "example": {
+                    "email": "johndoe@example.com"
+                }
+              },
+              "400": {
+                "properties": {
+                    "status": {
+                        "description": "Client error",
+                        "type":"string"
+                    },
+                    "error": {
+                        "description": "A descriptive error message",
+                        "type": "object"
+                    }
+                },
+                "example": {
+                    "status": "fail",
+                    "error": {
+                        "message": "There was a validation error"
+                    }
+                }
+            },
+            "401": {
+                "properties": {
+                    "status": {
+                        "description": "Authentication error",
+                        "type":"string"
+                    },
+                    "error": {
+                        "description": "A descriptive error message",
+                        "type": "object"
+                    }
+                },
+                "example": {
+                    "status": "fail",
+                    "error": {
+                        "message": "Token is required"
+                    }
+                }
+            },
+            "403": {
+                "properties": {
+                    "status": {
+                        "description": "Usually just the text fail",
+                        "type":"string"
+                    },
+                    "error": {
+                        "description": "A descriptive error message",
+                        "type": "object"
+                    }
+                },
+                "example": {
+                    "status": "fail",
+                    "error": {
+                        "message": "User is unauthorized"
+                    }
+                }
+            },
+            "404": {
+                "properties": {
+                    "status": {
+                        "description": "Authentication error",
+                        "type":"string"
+                    },
+                    "error": {
+                        "description": "A descriptive error message",
+                        "type": "object"
+                    }
+                },
+                "example": {
+                    "status": "fail",
+                    "error": {
+                        "message": "Data supplied by the user was not found"
+                    }
+                }
+            },
+            "500": {
+                "properties": {
+                    "status": {
+                        "description": "Server error",
+                        "type":"string"
+                    },
+                    "error": {
+                        "description": "A descriptive error message",
+                        "type": "object"
+                    }
+                },
+                "example": {
+                    "status": "fail",
+                    "error": {
+                        "message": "A server error prevented your request from being processed"
+                    }
+                }
+            }
+        }
+    }
+    
